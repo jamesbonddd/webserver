@@ -16,7 +16,6 @@ public class Server {
 		this.port = port;
 	}
 	
-	
 	public void start() throws IOException {
 		// Init
 		final ExecutorService executor = Executors.newFixedThreadPool(threadPoolMax);
@@ -34,11 +33,10 @@ public class Server {
 		    }
 		 });
 		
-		
 		// Server loop
 		while(true){
 			Socket socket = serverSocket.accept();
-			Callable<Integer> callable = new ClientHandler(socket);
+			Callable<Void> callable = new ClientHandler(socket);
 			executor.submit(callable);		
 		}	
 	}

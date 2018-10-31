@@ -5,33 +5,34 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
-public class ClientHandler implements Callable<Integer> {
+public class ClientHandler implements Callable<Void> {
 
 	private Socket socket;
+	private RequestDispatcher dispatcher;
 	
 	public ClientHandler(Socket s) {
 		socket = s;
+		dispatcher = new RequestDispatcher();
 	}
 	
-	public Integer call() throws Exception {
+	public Void call() throws Exception {
 		InputStream is = socket.getInputStream();
 		OutputStream os = socket.getOutputStream();
 		
 		// Parse request
-		String request = SimpleParser.parse(is);
-		System.out.println("Request:\n" + request);
+		HttpRequest request = HttpParser.parse(is);
+		HttpResponse response = new HttpResponse(os);
+		System.out.println(request.getMethod() + ": " + request.getRequestUrl().toString());
+	
+		// Dispatch request to the proper controller
+		dispatcher.dispatchRequest(request, response);
 		
-		// Request handling code ...
-		Thread.sleep(10 * 1000);
-		
-		// TODO: Abstract response write operations by implementing 
-		// an HttpResponse object.
-		os.write(getContent(request));
 		socket.close();
-		return 0;
+		return null;
 	}
 	
 	/**
