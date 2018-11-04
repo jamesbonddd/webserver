@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import util.RequestPath;
+
 public class HttpParser{
 
 	public static HttpRequest parse(InputStream is) throws Exception {
@@ -19,8 +21,10 @@ public class HttpParser{
 		if(words.length !=3) 
 			throw new Exception("protocol error");		
 		request.setVerb(words[0]);
-		request.setUrl(words[1]);
 		request.setProtocolVersion(words[2]);
+		RequestPath rp = new RequestPath(words[1]);
+		request.setUrl(rp.getPath());
+		request.setRequestPath(rp);
 		
 		// next lines
 		Map<String, String> headers = new HashMap<String, String>();
@@ -34,7 +38,6 @@ public class HttpParser{
 			headers.put(key, value);
 		}
 		request.setHeaders(headers);
-		
 		return request;
 	}
 

@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.util.Enumeration;
 import java.util.Map;
 
+import util.RequestPath;
+
 /**
  * 
  * Inspired by HttpServletRequest
@@ -15,12 +17,21 @@ public class HttpRequest {
 	private String protocolVersion;
 	private String url;
 	private Map<String, String> headers;
+	private RequestPath requestPath;
 	
 	public void setUrl(String url) throws Exception {
 		if(url.contains("../"))
 			// security concert (by default chrome removes the ..)
 			throw new Exception("../ not allowed");
 		this.url = url;
+	}
+	
+	public void setRequestPath(RequestPath p) {
+		requestPath = p;
+	}
+	
+	public String getParameter(String name) {
+		return requestPath.getParameter(name);
 	}
 	
 	public void setVerb(String verb) {

@@ -6,11 +6,15 @@ import java.io.PrintWriter;
 public class HomeController extends HttpServlet{
 
 	@Override
-	public void doGet(HttpRequest request, HttpResponse response) {
+	public void doGet(HttpRequest request, HttpResponse response) throws IOException {
 		try {
-			ExampleModel model = new ExampleModel("Jeff",24);
+			String name = request.getParameter("name");
+			int age = Integer.parseInt(request.getParameter("age"));
+			ExampleModel model = new ExampleModel(name,age);
 			response.sendView("template.mustache", model);
-		} catch (IOException e) {} // TODO
+		} catch (Exception e) {
+			response.sendView("error.mustache",new ErrorResponse("invalid get parameters (?name=x&age=y)") );
+		}
 	}
 }
 
@@ -29,5 +33,12 @@ class ExampleModel{
 	public ExampleModel(String name,int age) {
 		this.name = name;
 		this.age = age;
+	}
+}
+
+class ErrorResponse{
+	public String message;
+	public ErrorResponse(String msg) {
+		message = msg;
 	}
 }
